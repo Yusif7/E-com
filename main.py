@@ -1,50 +1,45 @@
 from database import initialize_database
-from models.product import Product
+from models.store import Store
 
 def main():
     initialize_database()
+    shop = Store("TechMarket")
 
     while True:
         print("\n=== МЕНЮ МАГАЗИНА ===")
         print("1. Добавить товар")
-        print("2. Показать все товары")
-        print("3. Удалить товар")
-        print("4. Обновить цену")
-        print("5. Найти по категории")
+        print("2. Показать каталог")
+        print("3. Купить товар")
+        print("4. Стоимость склада")
+        print("5. Поиск по категории")
         print("0. Выйти")
-
         choice = input("Выбор: ")
 
         if choice == "1":
-            name = input("Название: ")
-            price = float(input("Цена: "))
-            quantity = int(input("Количество: "))
-            category = input("Категория: ")
-            product = Product(name, price, quantity, category)
-            product.save_to_db()
+            n = input("Название: ")
+            p = float(input("Цена: "))
+            q = int(input("Количество: "))
+            c = input("Категория: ")
+            shop.add_product(n, p, q, c)
 
         elif choice == "2":
-            for p in Product.get_all():
-                print(p)
+            shop.show_catalog()
 
         elif choice == "3":
-            pid = int(input("Введите ID товара для удаления: "))
-            Product.delete_by_id(pid)
+            pid = int(input("ID товара: "))
+            cnt = int(input("Количество для покупки: "))
+            shop.sell_product(pid, cnt)
 
         elif choice == "4":
-            pid = int(input("ID товара: "))
-            new_price = float(input("Новая цена: "))
-            Product.update_price(pid, new_price)
+            shop.total_inventory_value()
 
         elif choice == "5":
-            cat = input("Введите категорию: ")
-            for p in Product.find_by_category(cat):
-                print(p)
+            cat = input("Категория: ")
+            shop.search_by_category(cat)
 
         elif choice == "0":
-            print("👋 Выход...")
+            print("👋 Выход.")
             break
-
         else:
             print("❌ Неверный выбор.")
 
