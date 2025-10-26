@@ -23,6 +23,25 @@ def initialize_database():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            product_id INTEGER NOT NULL,
+            quantity INTEGER NOT NULL CHECK(quantity > 0),
+            total_price REAL NOT NULL CHECK(total_price >= 0),
+            order_date TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(product_id) REFERENCES products(id)
+        )
+    """)
+
+    cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                role TEXT NOT NULL CHECK(role IN ('admin', 'cashier'))
+            )
+        """)
+
     conn.commit()
     conn.close()
-    print("✅ Таблица 'products' инициализирована.")

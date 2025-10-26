@@ -1,8 +1,10 @@
 from models.product import Product
 from database import get_connection
+from models.order import Order
+
 
 class Store:
-    # Менеджер магазина — управляет товарами и базой."
+    # Менеджер магазина — управляет товарами и базой.
     def __init__(self, name):
         self.name = name
         print(f"🛒 Магазин «{self.name}» запущен.")
@@ -26,29 +28,38 @@ class Store:
 
 
     def sell_product(self, product_id, count):
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.execute("SELECT quantity, name, price FROM products WHERE id = ?", (product_id,))
-        row = cur.fetchone()
+        try:
+            conn = get_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT quantity, name, price FROM products WHERE id = ?", (product_id,))
+            row = cur.fetchone()
 
-        if not row:
-            print("❌ Товар не найден.")
+            if not row:
+                raise ValueError("❌ Товар не найден.")
+            qty, name, price = row
+
+            if qty < count:
+                raise ValueError("⚠️ Недостаточно товара на складе.")
+
+            # Расчёт
+            total = price * count
+            new_qty = qty - count
+
+            # Обновляем остаток
+            cur.execute("UPDATE products SET quantity = ? WHERE id = ?", (new_qty, product_id))
+            conn.commit()
             conn.close()
-            return
-        qty, name, price = row
 
-        if qty < count:
-            print("⚠️ Недостаточно товара на складе.")
-            conn.close()
-            return
+            # Создаём заказ
+            order = Order(product_id, count, total)
+            order.save_to_db()
 
-        new_qty = qty - count
-        cur.execute("UPDATE products SET quantity = ? WHERE id = ?", (new_qty, product_id))
-        conn.commit()
-        conn.close()
+            print(f"✅ Продано {count} шт. '{name}' на сумму {total:.2f} руб.")
 
-        total = price * count
-        print(f"✅ Продано {count} шт. '{name}'. Сумма: {total:.2f} руб.")
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print("🚨 Ошибка при продаже:", e)
 
 
     def total_inventory_value(self):
