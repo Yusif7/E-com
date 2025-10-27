@@ -8,7 +8,6 @@ class Order:
         self.total_price = total_price
 
     def save_to_db(self):
-        """Сохраняет заказ в базу данных."""
         conn = get_connection()
         cur = conn.cursor()
         cur.execute(

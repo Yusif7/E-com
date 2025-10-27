@@ -1,4 +1,4 @@
-from database import initialize_database
+from database import initialize_database,get_connection
 from models.store import Store
 from models.order import Order
 from models.user import User, Admin, Cashier

@@ -66,4 +66,5 @@ class Cashier(User):
         super().__init__(username, password, "cashier")
 
     def get_permissions(self):
-        return ["sell_product", "view_orders"]
+        return ["show_products", "sell_product", "quantity_cost", "category_filter", "view_orders"]
+
