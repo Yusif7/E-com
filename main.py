@@ -1,7 +1,8 @@
 from database import initialize_database,get_connection
 from models.store import Store
 from models.order import Order
-from models.user import User, Admin, Cashier
+from models.user import User
+from models.product import Product
 
 def main():
     initialize_database()
@@ -34,6 +35,8 @@ def main():
             print("6. История заказов")
         if user.can("create_user"):
             print("7. Создание пользователя")
+        if user.can("update_product_info"):
+            print("8. Изменение информации о продукте")
         print("0. Выход")
 
 
@@ -78,6 +81,19 @@ def main():
             role = input("Роль (admin/cashier): ")
             u = User(uname, pwd, role)
             u.save_to_db()
+
+        elif choice == "8":
+            shop.show_catalog()
+            choice_id =int(input("Select product id: "))
+            choice =  int(input("What you would like to change 1 - price / 2 - quantity: "))
+            choice_count = int(input("Select count: "))
+            if choice == 1:
+                choice = "price"
+                Product.update_product_info(choice_id, choice, choice_count)
+            else:
+                choice = "quantity"
+                Product.update_product_info(choice_id, choice, choice_count)
+            shop.show_catalog()
 
         elif choice == "0":
             print("👋 Выход.")

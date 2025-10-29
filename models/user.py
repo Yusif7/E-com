@@ -59,7 +59,7 @@ class Admin(User):
         super().__init__(username, password, "admin")
 
     def get_permissions(self):
-        return ["add_product", "show_products", "sell_product", "quantity_cost", "category_filter", "view_orders", "create_user"]
+        return ["add_product", "show_products", "sell_product", "quantity_cost", "category_filter", "view_orders", "create_user", "update_product_info"]
 
 class Cashier(User):
     def __init__(self, username, password):

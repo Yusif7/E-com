@@ -41,15 +41,21 @@ class Product:
         print(f"🗑️ Товар с ID {product_id} удалён.")
 
     @staticmethod
-    def update_price(product_id, new_price):
-        if new_price < 0:
-            raise ValueError("Цена не может быть отрицательной.")
+    def update_product_info(product_id, kind, value):
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("UPDATE products SET price = ? WHERE id = ?", (new_price, product_id))
+        if kind == "price":
+            if value < 0:
+                raise ValueError("Цена не может быть отрицательной.")
+            cursor.execute("UPDATE products SET price = ? WHERE id = ?", (value, product_id))
+        else:
+            cursor.execute("UPDATE products SET quantity = ? WHERE id = ?", (value, product_id))
         conn.commit()
         conn.close()
-        print(f"💰 Цена товара ID {product_id} обновлена на {new_price}.")
+        if kind == "price":
+            print(f"💰 Цена товара ID {product_id} обновлена на {value}.")
+        else:
+            print(f"💰 Количество товара ID {product_id} обновлена на {value}.")
 
     @staticmethod
     def find_by_category(category):
